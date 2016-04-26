@@ -12,13 +12,13 @@ LOCK_FILE="$HOME/$LOCK_FILENAME"
 function truncateDir(){
   local dir_size=$(du -sm $SYNC_DIR | cut -f1)
   local max_size=$1
-  if [ $(du -sm $SYNC_DIR | cut -f1) -gt "$max_size" ]
-  then
+  while [ $(du -sm $SYNC_DIR | cut -f1) -gt "$max_size" ]
+  do
     IFS= read -r -d $'\0' line < <(find $SYNC_DIR -maxdepth 1 -type f -printf '%T@ %p\0' 2>/dev/null | sort -z -n)
     local file="${line#* }"
     echo "Deleting $file"
     rm "$file"
-  fi
+  done
 }
 
 SNAP_FILE=$SYNC_DIR/$DATE.jpg
